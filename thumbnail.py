@@ -15,20 +15,53 @@ bpy.ops.wm.read_factory_settings(use_empty=True)
 bpy.context.scene.render.image_settings.file_format = 'PNG'
 bpy.context.scene.render.image_settings.color_mode = 'RGBA'  # Enable alpha channel
 bpy.context.scene.render.film_transparent = True  # Enable transparent background
-bpy.context.scene.render.resolution_x = 256  # Icon size
-bpy.context.scene.render.resolution_y = 256
+bpy.context.scene.render.resolution_x = 512  # Icon size
+bpy.context.scene.render.resolution_y = 512
 bpy.context.scene.render.resolution_percentage = 100
 
 # Set up camera for isometric view
-bpy.ops.object.camera_add(location=(10, -5, 10), rotation=(radians(0), 0, radians(0)))
+bpy.ops.object.camera_add(location=(10, -10, 10), rotation=(radians(60), 0, radians(45)))
 camera = bpy.context.object
 bpy.context.scene.camera = camera
 
-# Set up lighting
-bpy.ops.object.light_add(type='SUN', location=(5, 5, 5))
-light = bpy.context.object
-light.data.energy = 5
-light.data.use_shadow = False  # Disable shadows for cleaner render
+# Set up multiple point lights for lively illumination
+# Light 1: Front-top-right (warm tone)
+bpy.ops.object.light_add(type='POINT', location=(6, 6, 6))
+light1 = bpy.context.object
+light1.data.energy = 1600  # Doubled brightness
+light1.data.color = (1.0, 0.95, 0.85)  # Pastel yellow tint
+light1.data.use_shadow = False
+
+# Light 2: Front-bottom-left (cool tone)
+bpy.ops.object.light_add(type='POINT', location=(-6, -6, -2))
+light2 = bpy.context.object
+light2.data.energy = 1600
+light2.data.color = (0.9, 0.95, 0.9)  # Soft pastel yellow
+light2.data.use_shadow = False
+
+# Light 3: Back-top (neutral tone)
+bpy.ops.object.light_add(type='POINT', location=(0, -6, 6))
+light3 = bpy.context.object
+light3.data.energy = 1600
+light3.data.color = (1.0, 0.98, 0.9)  # Subtle pastel yellow
+light3.data.use_shadow = False
+
+# Light 4: Top-center (bright overhead light)
+bpy.ops.object.light_add(type='POINT', location=(0, 0, 8))
+light4 = bpy.context.object
+light4.data.energy = 2000  # Extra bright for top illumination
+light4.data.color = (1.0, 0.97, 0.88)  # Warm pastel yellow
+light4.data.use_shadow = False
+
+# Add ambient light for fill
+bpy.ops.object.light_add(type='AREA', location=(0, 0, 0))
+ambient = bpy.context.object
+ambient.data.type = 'AREA'
+ambient.data.energy = 200  # Doubled ambient fill
+ambient.data.color = (0.95, 0.95, 0.85)  # Soft pastel yellow ambient
+ambient.data.size = 10  # Width of the area light
+ambient.data.size_y = 10  # Height of the area light
+ambient.data.use_shadow = False
 
 # Function to center and scale object
 def prepare_object(obj):
@@ -39,7 +72,7 @@ def prepare_object(obj):
 
     # Center object at origin based on bounding box
     bpy.ops.object.origin_set(type='ORIGIN_CENTER_OF_MASS', center='BOUNDS')
-    obj.location = (0, 0, 1)
+    obj.location = (0, 0, 1)  # Centered at origin with Z offset
 
     # Reset rotation to ensure consistent orientation
     # obj.rotation_euler = (0, 0, 0)
@@ -47,7 +80,7 @@ def prepare_object(obj):
     # Scale to fit within camera view
     max_dim = max(obj.dimensions.x, obj.dimensions.y, obj.dimensions.z)
     if max_dim > 0:
-        scale = 4.0 / max_dim  # Adjusted for better centering and visibility
+        scale = 6.0 / max_dim  # Increased from 4.0 to 6.0 for 1.5x zoom
         obj.scale = (scale, scale, scale)
     else:
         print(f"Warning: Object {obj.name} has zero dimensions, skipping scaling.")
@@ -57,13 +90,13 @@ def prepare_object(obj):
         mat = bpy.data.materials.new(name="Default")
         mat.use_nodes = True
         bsdf = mat.node_tree.nodes.get("Principled BSDF")
-        bsdf.inputs['Base Color'].default_value = (1,1,1, 1.0)  # Light gray
+        bsdf.inputs['Base Color'].default_value = (1, 1, 1, 1.0)  # White
         obj.data.materials.append(mat)
 
 # Loop through .obj files
 for filename in os.listdir(obj_directory):
     if filename.endswith(".obj"):
-        # Clear scene objects (except camera and light)
+        # Clear scene objects (except camera and lights)
         bpy.ops.object.select_all(action='DESELECT')
         for obj in bpy.context.scene.objects:
             if obj.type not in ['CAMERA', 'LIGHT']:
@@ -93,7 +126,7 @@ for filename in os.listdir(obj_directory):
         bpy.ops.view3d.camera_to_view_selected()
 
         # Adjust camera distance to ensure model fits
-        cam_z = max(imported_obj.dimensions) * 2  # Dynamic distance based on model size
+        cam_z = max(imported_obj.dimensions) * 1.33  # Reduced from 2 to 1.33 for 1.5x zoom
         camera.location = (cam_z, -cam_z, cam_z)
         camera.rotation_euler = (radians(60), 0, radians(45))
 
