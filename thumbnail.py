@@ -3,8 +3,8 @@ import os
 from math import radians
 
 # Define paths
-obj_directory = "/Users/dig1t/Desktop/renders/obj"  # Directory with .obj files
-output_directory = "/Users/dig1t/Desktop/renders/out"  # Directory for PNG output
+obj_directory = "/Users/dig1t/Git/blender-scripts/obj"  # Directory with .obj files
+output_directory = "/Users/dig1t/Git/blender-scripts/out"  # Directory for PNG output
 os.makedirs(output_directory, exist_ok=True)
 
 # Clear existing scene
