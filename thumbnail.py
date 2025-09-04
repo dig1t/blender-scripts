@@ -24,40 +24,93 @@ bpy.ops.object.camera_add(location=(10, -10, 10), rotation=(radians(60), 0, radi
 camera = bpy.context.object
 bpy.context.scene.camera = camera
 
-# Set up multiple point lights for lively illumination
-# Light 1: Front-top-right (warm tone)
-bpy.ops.object.light_add(type='POINT', location=(6, 6, 6))
-light1 = bpy.context.object
-light1.data.energy = 1600  # Doubled brightness
-light1.data.color = (1.0, 0.95, 0.85)  # Pastel yellow tint
-light1.data.use_shadow = False
+# Professional product photoshoot lighting setup
 
-# Light 2: Front-bottom-left (cool tone)
-bpy.ops.object.light_add(type='POINT', location=(-6, -6, -2))
-light2 = bpy.context.object
-light2.data.energy = 1600
-light2.data.color = (0.9, 0.95, 0.9)  # Soft pastel yellow
-light2.data.use_shadow = False
+# Key Light: Main light source (front-right, 45 degrees)
+bpy.ops.object.light_add(type='AREA', location=(5, 5, 4))
+key_light = bpy.context.object
+key_light.data.type = 'AREA'
+key_light.data.energy = 2000  # Strong key light
+key_light.data.color = (1.0, 0.98, 0.95)  # Slightly warm daylight
+key_light.data.size = 8  # Large soft light source
+key_light.data.size_y = 8
+key_light.data.use_shadow = False
 
-# Light 3: Back-top (neutral tone)
-bpy.ops.object.light_add(type='POINT', location=(0, -6, 6))
-light3 = bpy.context.object
-light3.data.energy = 1600
-light3.data.color = (1.0, 0.98, 0.9)  # Subtle pastel yellow
-light3.data.use_shadow = False
+# Fill Light: Softer light to fill shadows (front-left, lower intensity)
+bpy.ops.object.light_add(type='AREA', location=(-4, 4, 2))
+fill_light = bpy.context.object
+fill_light.data.type = 'AREA'
+fill_light.data.energy = 800  # Softer fill light
+fill_light.data.color = (0.98, 0.99, 1.0)  # Slightly cool fill
+fill_light.data.size = 6
+fill_light.data.size_y = 6
+fill_light.data.use_shadow = False
 
-# Light 4: Top-center (bright overhead light)
-bpy.ops.object.light_add(type='POINT', location=(0, 0, 8))
-light4 = bpy.context.object
-light4.data.energy = 2000  # Extra bright for top illumination
-light4.data.color = (1.0, 0.97, 0.88)  # Warm pastel yellow
-light4.data.use_shadow = False
+# Rim Light: Back light to separate subject from background (back-left)
+bpy.ops.object.light_add(type='AREA', location=(-6, -6, 3))
+rim_light = bpy.context.object
+rim_light.data.type = 'AREA'
+rim_light.data.energy = 1200  # Bright rim light
+rim_light.data.color = (1.0, 1.0, 1.0)  # Pure white
+rim_light.data.size = 4
+rim_light.data.size_y = 4
+rim_light.data.use_shadow = False
+
+# Background Light: Subtle light for background separation
+bpy.ops.object.light_add(type='AREA', location=(0, -8, 1))
+bg_light = bpy.context.object
+bg_light.data.type = 'AREA'
+bg_light.data.energy = 600  # Subtle background light
+bg_light.data.color = (0.95, 0.97, 1.0)  # Cool background tone
+bg_light.data.size = 10
+bg_light.data.size_y = 10
+bg_light.data.use_shadow = False
+
+# Top Light: Overhead light for even illumination
+bpy.ops.object.light_add(type='AREA', location=(0, 0, 8))
+top_light = bpy.context.object
+top_light.data.type = 'AREA'
+top_light.data.energy = 1000  # Moderate overhead
+top_light.data.color = (1.0, 0.99, 0.97)  # Natural overhead
+top_light.data.size = 12
+top_light.data.size_y = 12
+top_light.data.use_shadow = False
+
+# Front-Left Shadow Fill: Additional light to eliminate shadow blob
+bpy.ops.object.light_add(type='AREA', location=(-2, 3, 1))
+shadow_fill = bpy.context.object
+shadow_fill.data.type = 'AREA'
+shadow_fill.data.energy = 1200  # Bright enough to eliminate shadow
+shadow_fill.data.color = (1.0, 0.99, 0.98)  # Warm fill to match key light
+shadow_fill.data.size = 5
+shadow_fill.data.size_y = 5
+shadow_fill.data.use_shadow = False
+
+# Camera Light: Wide radius light from camera position
+bpy.ops.object.light_add(type='AREA', location=(10, -10, 10))
+camera_light = bpy.context.object
+camera_light.data.type = 'AREA'
+camera_light.data.energy = 1500  # Bright camera flash
+camera_light.data.color = (1.0, 1.0, 1.0)  # Pure white camera flash
+camera_light.data.size = 15  # Very wide radius
+camera_light.data.size_y = 15
+camera_light.data.use_shadow = False
+
+# Bottom Up Light: Soft upward illumination from below
+bpy.ops.object.light_add(type='AREA', location=(0, 0, -3))
+bottom_light = bpy.context.object
+bottom_light.data.type = 'AREA'
+bottom_light.data.energy = 300  # Low brightness for soft effect
+bottom_light.data.color = (1.0, 0.99, 0.98)  # Soft warm tone
+bottom_light.data.size = 20  # Big radius for wide coverage
+bottom_light.data.size_y = 20
+bottom_light.data.use_shadow = False
 
 # Add ambient light for fill
 bpy.ops.object.light_add(type='AREA', location=(0, 0, 0))
 ambient = bpy.context.object
 ambient.data.type = 'AREA'
-ambient.data.energy = 200  # Doubled ambient fill
+ambient.data.energy = 500  # Overall scene lighting boost
 ambient.data.color = (0.95, 0.95, 0.85)  # Soft pastel yellow ambient
 ambient.data.size = 10  # Width of the area light
 ambient.data.size_y = 10  # Height of the area light
